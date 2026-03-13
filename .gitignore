@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Generated data
+apps/data/raw/
+apps/data/processed/
+apps/api/data/raw/
+apps/api/data/processed/
+
+# Models
+apps/models/
+apps/api/models/
+
+# Env
+.env

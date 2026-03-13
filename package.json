@@ -1,0 +1,7 @@
+{
+  "name": "mtg-card-generator-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ]
+}

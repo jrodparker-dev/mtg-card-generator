@@ -94,6 +94,8 @@ cd apps/api
 python -m brains.Image_Generator_Brain.metadata_dataset
 ```
 
+`metadata_dataset` now keeps only rows that have a local image file in `apps/api/data/raw/scryfall_art/`. If it reports skipped rows, rerun the download step to fill gaps before training.
+
 ### Step 3: train image model
 ```bash
 cd apps/api

@@ -1,8 +1,6 @@
 import json
 import re
-from collections import Counter
-
-from .config import ART_METADATA_JSONL, SCRYFALL_DEFAULT_CARDS
+from .config import ART_CACHE_DIR, ART_METADATA_JSONL, SCRYFALL_DEFAULT_CARDS
 
 
 TOKEN_RE = re.compile(r"[A-Za-z']+")
@@ -18,6 +16,7 @@ def build_metadata_rows() -> int:
 
     cards = json.loads(SCRYFALL_DEFAULT_CARDS.read_text(encoding="utf-8"))
     rows = []
+    missing_images = 0
     for card in cards:
         image_uris = card.get("image_uris") or {}
         art_crop = image_uris.get("art_crop")
@@ -29,6 +28,11 @@ def build_metadata_rows() -> int:
         tokens.extend(_tokenize(card.get("type_line", ""))[:4])
         tokens.extend(_tokenize(card.get("oracle_text", ""))[:8])
 
+        image_path = ART_CACHE_DIR / f"{card['id']}.jpg"
+        if not image_path.exists():
+            missing_images += 1
+            continue
+
         rows.append({
             "id": card["id"],
             "name": card.get("name", ""),
@@ -37,11 +41,15 @@ def build_metadata_rows() -> int:
             "types": types,
             "rarity": card.get("rarity", "common"),
             "image_url": art_crop,
+            "image_path": str(image_path),
         })
 
     with ART_METADATA_JSONL.open("w", encoding="utf-8") as fh:
         for row in rows:
             fh.write(json.dumps(row) + "\n")
+
+    if missing_images:
+        print(f"Skipped {missing_images} rows without a downloaded art image.")
     return len(rows)
 
 
